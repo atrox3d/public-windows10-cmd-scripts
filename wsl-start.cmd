@@ -2,21 +2,23 @@ cls
 @echo off
 echo ###############################################################################
 echo # wsl-start.cmd^| START
-echo ###############################################################################
 
 set INFO=echo [ INFO]
 set OK=echo [   OK]
 set ERROR=echo [ERROR]
 set DEBUG=REM echo [DEBUG]
 
-%INFO% shutdown docker desktop...
-wmic process where "name like '%%docker desktop%%'" get processid, name, commandline
-taskkill /im  "docker desktop.exe" /f
+REM echo ###############################################################################
+REM %INFO% shutdown docker desktop...
+REM wmic process where "name like '%%docker desktop%%'" get processid, name, commandline
+REM taskkill /im  "docker desktop.exe" /f
 
+echo ###############################################################################
 %INFO% shutdown wsl...
 %DEBUG% wsl --shutdown
 wsl --shutdown
 
+echo ###############################################################################
 set IPADDRESS=192.168.1.10
 set UNCPATH=\\%IPADDRESS%\c$\users\***REMOVED***\code
 set UNCUSER=***REMOVED***
@@ -33,16 +35,16 @@ if not errorlevel 1 (
 	
 		%OK% %UNCPATH% exists
 
-		%INFO% umount %UNCPATH%...
+		%INFO% net delete %UNCPATH%...
 		net use %UNCPATH% /d /y
 
-		%INFO% mount %UNCPATH%...
+		%INFO% net use %UNCPATH%...
 		net use %UNCPATH% /u:%UNCUSER% %UNCPASSWORD%
 
-		%INFO% umount Z:...
+		%INFO% net delete Z:...
 		net use Z: /d /y
 
-		%INFO% mount z: %UNCPATH%
+		%INFO% net use z: %UNCPATH%
 		net use z: %UNCPATH% /u:%UNCUSER% %UNCPASSWORD%
 
 		echo ###############################################################################
@@ -63,15 +65,17 @@ if not errorlevel 1 (
 	%ERROR% address %IPADDRESS% is not available
 )
 
+echo ###############################################################################
 %INFO%  start wsl ubuntu 18 and ssh...
 wsl -d ubuntu18 -u root service ssh restart
 
+echo ###############################################################################
 %INFO% start wsl ubuntu 20 and ssh...
 wsl -d ubuntu20 -u root service ssh restart
 
-%INFO% start docker desktop
-REM start /b "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+REM %INFO% start docker desktop
+REM REM start /b "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+REM start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 
 echo ###############################################################################
 echo # wsl-start.cmd ^| END
